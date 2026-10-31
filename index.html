@@ -121,10 +121,12 @@
 </section>
 
 <section class="setup">
+  <!--
   <h2>Opzioni</h2>
   <label class="opt">
     <input id="mostra" type="checkbox"> Mostra il testo (altrimenti solo voce)
   </label>
+    -->
   <div id="avviso" hidden></div>
 </section>
 
@@ -134,7 +136,7 @@
 
   const $ = id => document.getElementById(id);
   const btn = $("roll"), stato = $("stato");
-  const MS_DADI = 1200;
+  const MS_DADI = 1000;
   const haVoce = "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
 
   let pool = [];   // elementi: {tipo, testo}, riempito da frasi.txt
@@ -235,7 +237,7 @@
 
   function aggiornaTesto() {
     if (!corrente) return;
-    $("testo").textContent = $("mostra").checked ? "“" + corrente.testo + "”" : "🔊 Ascolta…";
+    $("testo").textContent = "“" + corrente.testo + "”";
   }
 
   // ---------- Eventi ----------
