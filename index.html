@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jumanji · Bonus o Penitenza</title>
+<style>
+  :root {
+    --gold: #e8b84a; --gold-dark: #8a5516; --wood: #3b2209;
+    --jungle: #0e2a17; --jungle-dark: #06130a;
+    --parch: #f1deb0; --ink: #3a2610;
+    --bonus: #2f8f4e; --pena: #b3261e;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; }
+  body {
+    min-height: 100vh;
+    background:
+      radial-gradient(ellipse at 50% 0%, #1d5a31 0%, transparent 60%),
+      repeating-linear-gradient(115deg, rgba(255,255,255,.025) 0 14px, transparent 14px 34px),
+      linear-gradient(180deg, var(--jungle), var(--jungle-dark));
+    color: var(--parch);
+    font-family: Georgia, "Palatino Linotype", "Times New Roman", serif;
+    display: flex; flex-direction: column; align-items: center;
+    gap: 22px; padding: 28px 18px 40px; text-align: center;
+  }
+  h1 {
+    margin: 0; font-size: clamp(2.6rem, 14vw, 4.6rem); letter-spacing: .14em;
+    text-transform: uppercase; font-weight: 900; padding-left: .14em;
+    background: linear-gradient(180deg, #ffe9a6, var(--gold) 45%, #a8681c);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    filter: drop-shadow(0 3px 0 #2a1805) drop-shadow(0 6px 14px rgba(0,0,0,.6));
+  }
+  .sub { margin: -14px 0 0; letter-spacing: .3em; font-size: .8rem;
+         text-transform: uppercase; color: var(--gold); opacity: .85; }
+  .divider { font-size: 1.2rem; letter-spacing: .6em; opacity: .7; }
+
+  #roll {
+    width: min(72vw, 270px); aspect-ratio: 1; border-radius: 50%;
+    border: 6px solid var(--wood); cursor: pointer; color: #2a1805;
+    background: radial-gradient(circle at 35% 30%, #ffe08a, var(--gold) 45%, var(--gold-dark));
+    box-shadow: 0 0 0 4px var(--gold-dark), 0 14px 30px rgba(0,0,0,.6),
+                inset 0 -8px 16px rgba(0,0,0,.35), inset 0 6px 10px rgba(255,255,255,.4);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+    font-family: inherit; font-weight: 800; font-size: 1.35rem;
+    text-transform: uppercase; letter-spacing: .08em;
+    -webkit-tap-highlight-color: transparent;
+  }
+  #roll .dado { font-size: 4.2rem; line-height: 1; }
+  #roll:active { transform: scale(.97); }
+  #roll:disabled { filter: grayscale(1) brightness(.55); cursor: default; }
+  #roll.rolling .dado { animation: scuoti .22s linear infinite; }
+  #roll.rolling { animation: pulsa .5s ease-in-out infinite; }
+  @keyframes scuoti {
+    0% { transform: rotate(-18deg) translateY(-4px); }
+    50% { transform: rotate(18deg) translateY(4px); }
+    100% { transform: rotate(-18deg) translateY(-4px); }
+  }
+  @keyframes pulsa { 50% { box-shadow: 0 0 0 10px rgba(232,184,74,.35), 0 14px 30px rgba(0,0,0,.6); } }
+
+  #risultato {
+    width: min(100%, 440px); background: var(--parch); color: var(--ink);
+    border: 5px double var(--gold-dark); border-radius: 14px; padding: 18px 16px 16px;
+    box-shadow: 0 12px 30px rgba(0,0,0,.55); display: flex; flex-direction: column;
+    align-items: center; gap: 12px;
+  }
+  #risultato[hidden] { display: none; }
+  #risultato.pop { animation: pop .45s cubic-bezier(.2,1.4,.4,1); }
+  @keyframes pop { from { transform: scale(.6) rotate(-4deg); opacity: 0; } }
+  .badge {
+    padding: 6px 18px; border-radius: 999px; color: #fff; font-weight: 800;
+    letter-spacing: .18em; text-transform: uppercase; font-size: 1.05rem;
+  }
+  .badge.bonus { background: var(--bonus); }
+  .badge.penitenza { background: var(--pena); }
+  .badge.sorpresa { background: var(--gold-dark); }
+  #testo { font-size: 1.35rem; line-height: 1.35; font-style: italic; word-break: break-word; }
+  button.small {
+    font-family: inherit; font-size: .95rem; cursor: pointer; padding: 8px 16px;
+    border-radius: 10px; border: 2px solid var(--gold-dark); background: transparent;
+    color: var(--ink); font-weight: 700;
+  }
+
+  #stato { min-height: 1.3em; color: var(--gold); font-size: .95rem; letter-spacing: .04em; }
+
+  .setup {
+    width: min(100%, 440px); background: rgba(0,0,0,.35);
+    border: 1px solid rgba(232,184,74,.35); border-radius: 14px;
+    padding: 14px; display: flex; flex-direction: column; gap: 12px;
+  }
+  .setup h2 { margin: 0; font-size: .8rem; letter-spacing: .25em;
+              text-transform: uppercase; color: var(--gold); font-weight: 700; }
+  .riga { display: flex; flex-direction: column; gap: 6px; font-size: .92rem; text-align: left; }
+  .riga select {
+    width: 100%; padding: 9px; border-radius: 8px; font: inherit; font-size: .95rem;
+    background: #1b1308; color: var(--parch); border: 1px solid rgba(232,184,74,.5);
+  }
+  .riga input[type=range] { width: 100%; accent-color: var(--gold); }
+  .opt { display: flex; align-items: center; justify-content: center; gap: 8px; font-size: .95rem; }
+  .opt input { width: 20px; height: 20px; accent-color: var(--gold); }
+  #avviso { font-size: .85rem; color: #ffb4a8; }
+</style>
+</head>
+<body>
+
+<h1>Jumanji</h1>
+<p class="sub">Bonus o penitenza?</p>
+<div class="divider">🌴 🥁 🌴</div>
+
+<button id="roll">
+  <span class="dado">🎲</span>
+  <span id="roll-label">Tira i dadi</span>
+</button>
+
+<div id="stato"></div>
+
+<section id="risultato" hidden aria-live="polite">
+  <div id="badge" class="badge"></div>
+  <div id="testo"></div>
+  <button id="riascolta" class="small">🔊 Riascolta</button>
+</section>
+
+<section class="setup">
+  <h2>Opzioni</h2>
+  <label class="opt">
+    <input id="mostra" type="checkbox"> Mostra il testo (altrimenti solo voce)
+  </label>
+  <div id="avviso" hidden></div>
+</section>
+
+<script>
+  // Le frasi stanno nel file frasi.txt, nella stessa cartella di questa pagina.
+  const FILE_FRASI = "frasi.txt";
+
+  const $ = id => document.getElementById(id);
+  const btn = $("roll"), stato = $("stato");
+  const MS_DADI = 1200;
+  const haVoce = "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
+
+  let pool = [];   // elementi: {tipo, testo}, riempito da frasi.txt
+  let sacchetto = [], ultimo = null, inCorso = false, corrente = null;
+  let voceScelta = null, vocePitch = 1;
+
+  // Formato di frasi.txt: una frase per riga, con prefisso “bonus:” o “penitenza:”.
+  // Righe vuote e righe che iniziano con # vengono ignorate. Senza prefisso = “sorpresa”.
+  function leggiFrasi(contenuto) {
+    return contenuto.replace(/^\uFEFF/, "").split(/\r?\n/)
+      .map(r => r.trim())
+      .filter(r => r && !r.startsWith("#"))
+      .map(r => {
+        const m = r.match(/^(bonus|penitenz[ae])\s*[:\-]\s*(.+)$/i);
+        if (!m) return { tipo: "sorpresa", testo: r };
+        return { tipo: m[1].toLowerCase() === "bonus" ? "bonus" : "penitenza", testo: m[2].trim() };
+      });
+  }
+
+  const conta = t => pool.filter(x => x.tipo === t).length;
+  const riepilogo = () => "Pronti: " + conta("bonus") + " bonus · " + conta("penitenza") + " penitenze"
+    + (conta("sorpresa") ? " · " + conta("sorpresa") + " sorprese" : "");
+
+  // ---------- Voce ----------
+  function caricaVoci() {
+    if (!haVoce) return;
+    const tutte = speechSynthesis.getVoices();
+    const it = tutte.filter(v => v.lang.toLowerCase().replace("_", "-").startsWith("it"));
+    // Il browser non dice né il sesso né la qualità di una voce: li deduco dal nome.
+    const NOMI_UOMO = /\b(luca|cosimo|diego|giorgio|paolo|marco|riccardo|male|uomo|maschi)/i;
+    const NOMI_DONNA = /\b(alice|elsa|isabella|federica|elisa|paola|female|donna|femmin)/i;
+    const èMaschile = v => NOMI_UOMO.test(v.name) && !NOMI_DONNA.test(v.name);
+    const punteggio = v => {
+      let p = 0;
+      if (v.lang.toLowerCase().replace("_", "-") === "it-it") p += 2;       // italiano d’Italia
+      if (/natural|neural|online/i.test(v.name)) p += 5;                    // voci neurali (Edge, ecc.)
+      if (/premium|enhanced|migliorat|potenziat/i.test(v.name)) p += 4;     // voci di alta qualità (Apple)
+      if (/google/i.test(v.name)) p += 2;                                   // voce Google (Android/Chrome)
+      if (èMaschile(v)) p += 8;                                             // preferenza voce maschile
+      if (NOMI_DONNA.test(v.name)) p -= 8;
+      return p;
+    };
+    voceScelta = [...it].sort((a, b) => punteggio(b) - punteggio(a))[0] || null;
+    // Se la voce scelta non è riconoscibile come maschile, abbasso il tono per renderla più grave
+    vocePitch = voceScelta && èMaschile(voceScelta) ? 1 : 0.75;
+    const av = $("avviso");
+    if (!tutte.length) {
+      av.hidden = false;
+      av.textContent = "Nessuna voce trovata: controlla le impostazioni di sintesi vocale del telefono.";
+    } else if (!it.length) {
+      av.hidden = false;
+      av.textContent = "Nessuna voce italiana installata: installala dalle impostazioni del telefono per una pronuncia corretta.";
+    } else {
+      av.hidden = true;
+    }
+  }
+
+  function parla(testo) {
+    if (!haVoce) return;
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(testo);
+    u.lang = voceScelta ? voceScelta.lang : "it-IT";
+    if (voceScelta) u.voice = voceScelta;
+    u.rate = 1;
+    u.pitch = vocePitch;
+    u.onstart = () => { stato.textContent = "In riproduzione…"; };
+    u.onend = () => { stato.textContent = riepilogo(); };
+    u.onerror = () => { stato.textContent = riepilogo(); };
+    speechSynthesis.speak(u);
+  }
+
+  // ---------- Estrazione senza ripetizioni finché non sono usciti tutti ----------
+  function prossimo() {
+    if (!sacchetto.length) {
+      sacchetto = [...pool];
+      for (let i = sacchetto.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [sacchetto[i], sacchetto[j]] = [sacchetto[j], sacchetto[i]];
+      }
+      if (sacchetto.length > 1 && sacchetto[sacchetto.length - 1] === ultimo) {
+        sacchetto.unshift(sacchetto.pop());
+      }
+    }
+    return (ultimo = sacchetto.pop());
+  }
+
+  function mostra(it) {
+    corrente = it;
+    const b = $("badge");
+    b.className = "badge " + it.tipo;
+    b.textContent = it.tipo === "bonus" ? "★ Bonus"
+      : it.tipo === "penitenza" ? "☠ Penitenza" : "✦ Sorpresa";
+    aggiornaTesto();
+    const r = $("risultato");
+    r.hidden = false;
+    r.classList.remove("pop"); void r.offsetWidth; r.classList.add("pop");
+  }
+
+  function aggiornaTesto() {
+    if (!corrente) return;
+    $("testo").textContent = $("mostra").checked ? "“" + corrente.testo + "”" : "🔊 Ascolta…";
+  }
+
+  // ---------- Eventi ----------
+  btn.addEventListener("click", () => {
+    if (inCorso || !pool.length) return;
+    inCorso = true;
+    const it = prossimo();
+    btn.classList.add("rolling");
+    $("roll-label").textContent = "Rotolano…";
+    $("risultato").hidden = true;
+    stato.textContent = "I dadi rotolano…";
+
+    // “Sblocca” la voce dentro il tocco (serve a iPhone/Safari): frase vuota a volume zero
+    if (haVoce) {
+      speechSynthesis.cancel();
+      const w = new SpeechSynthesisUtterance(" ");
+      w.volume = 0;
+      speechSynthesis.speak(w);
+    }
+
+    setTimeout(() => {
+      btn.classList.remove("rolling");
+      $("roll-label").textContent = "Tira ancora";
+      inCorso = false;
+      mostra(it);
+      parla(it.testo);
+    }, MS_DADI);
+  });
+
+  $("riascolta").addEventListener("click", () => { if (corrente) parla(corrente.testo); });
+  $("mostra").addEventListener("change", aggiornaTesto);
+
+  // ---------- Avvio ----------
+  if (!haVoce) {
+    $("mostra").checked = true;
+    $("mostra").disabled = true;
+    const av = $("avviso");
+    av.hidden = false;
+    av.textContent = "Questo browser non supporta la sintesi vocale: le frasi verranno solo mostrate.";
+  } else {
+    caricaVoci();
+    speechSynthesis.addEventListener("voiceschanged", caricaVoci);
+  }
+  async function caricaFrasi() {
+    btn.disabled = true;
+    stato.textContent = "Carico le frasi…";
+    try {
+      // Il parametro ?v= evita che il browser usi una copia vecchia dopo una modifica
+      const r = await fetch(FILE_FRASI + "?v=" + Date.now(), { cache: "no-store" });
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      pool = leggiFrasi(await r.text());
+      sacchetto = []; ultimo = null;
+      btn.disabled = pool.length === 0;
+      stato.textContent = pool.length ? riepilogo() : "Il file " + FILE_FRASI + " è vuoto: aggiungi delle frasi.";
+    } catch (e) {
+      stato.textContent = "Non riesco a leggere " + FILE_FRASI + ". La pagina va aperta da un indirizzo web "
+        + "(non come file locale) e il file deve stare nella stessa cartella.";
+    }
+  }
+  caricaFrasi();
+</script>
+</body>
+</html>
