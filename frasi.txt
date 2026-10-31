@@ -1,0 +1,14 @@
+# Una frase per riga, con prefisso "bonus:" oppure "penitenza:".
+# Le righe vuote e quelle che iniziano con # vengono ignorate.
+# Una riga senza prefisso esce come "sorpresa".
+
+bonus: Sei salvo! Puoi saltare il prossimo turno.
+bonus: Scegli un giocatore che deve fare la prossima penitenza.
+bonus: Puoi fare una domanda a chiunque, e deve rispondere sinceramente.
+bonus: Tira ancora i dadi.
+
+penitenza: Balla per dieci secondi senza musica.
+penitenza: Imita un animale della giungla finché qualcuno lo indovina.
+penitenza: Canta una canzone a squarciagola.
+penitenza: Parla come un pirata per i prossimi tre turni.
+penitenza: Fai dieci saltelli gridando il tuo nome.
